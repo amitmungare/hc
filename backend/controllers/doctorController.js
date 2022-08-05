@@ -30,16 +30,16 @@ exports.loginDoctor = catchAsyncErrors(async(req, res, next) => {
         return next(new ErrorHander("Please enter email and password", 400));
     }
 
-    const doctor = await Doctor.findOne({ demail }).select("+password");
+    const doctor = await Doctor.findOne({ demail }).select("+dpassword");
 
     if (!doctor) {
         return next(new ErrorHander("Invalid email or password", 401));
     }
 
-    const isPasswordMatched = await doctor.comparePassword(password);
+    const isPasswordMatched = await doctor.comparePassword(dpassword);
 
     if (!isPasswordMatched) {
-        return next(new ErrorHander("Invalid email or password", 401));
+        return next(new ErrorHander("Invalid email or passwords", 401));
     }
 
     sendToken(doctor, 200, res);
@@ -98,27 +98,28 @@ exports.updateDoctorProfile = catchAsyncErrors(async(req, res, next) => {
 
 
 // making report 
-// exports.createReport = catchAsyncErrors(async(req, res, next) => {
+exports.createReport = catchAsyncErrors(async(req, res, next) => {
 
-//     const {report} = req.body;
+    const {report} = req.body;
+
+    const doctor = await Doctor.findById(req.doctor.id);
     
-//     const aadharverify = await Aadhar.findOne({ addharnumber : req.body.addharnumber });
-//     if (!aadharverify) {
-//         return next(new ErrorHander("aadhar card not found", 404));
-//     }
+    const user = await User.findOne({ addharnumber : req.body.addharnumber });
+    if (!user) {
+        return next(new ErrorHander("aadhar card not found", 404));
+    }
 
     
-//     const user = await User.create({
-//         name : aadharverify.name,
-//         addharnumber,
-//         email,
-//         password,
-//         dob : aadharverify.dob,
-//         gender : aadharverify.gender,
-//         phoneno : aadharverify.phoneno,
-//         address : aadharverify.address,
-//         pincode : aadharverify.pincode
-//     });
+    const reportcreate = await Report.create({
 
-//     sendToken(user, 201, res);
-// });
+        name:user.name,
+        addharnumber:user.addharnumber,
+        email:user.email,
+        dname:doctor.dname,
+        demail:doctor.demail,
+        report:report
+
+    });
+
+    sendToken(reportcreate, 201, res);
+});

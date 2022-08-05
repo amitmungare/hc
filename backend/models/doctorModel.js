@@ -27,11 +27,11 @@ const doctorSchema = new mongoose.Schema({
 
 doctorSchema.pre("save", async function(next) {
 
-    if (!this.isModified("password")) {
+    if (!this.isModified("dpassword")) {
         next();
     }
 
-    this.password = await bcrypt.hash(this.password, 10);
+    this.dpassword = await bcrypt.hash(this.dpassword, 10);
 });
 
 // jwt token
@@ -43,8 +43,8 @@ doctorSchema.methods.getJWTToken = function() {
 
 
 // compare password
-doctorSchema.methods.comparePassword = async function(password) {
-    return await bcrypt.compare(password, this.password);
+doctorSchema.methods.comparePassword = async function(dpassword) {
+    return await bcrypt.compare(dpassword, this.dpassword);
 }
 
 // password reset token 

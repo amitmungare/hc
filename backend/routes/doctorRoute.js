@@ -5,7 +5,8 @@ const {
     loginDoctor,
     logout,
     getDoctorDetails,
-    updateDoctorProfile
+    updateDoctorProfile,
+    createReport
 } = require("../controllers/doctorController");
 
 
@@ -20,6 +21,8 @@ router.route("/logout").get(logout);
 router.route("/me").get(isAuthenticatedDoctor, getDoctorDetails);
 
 router.route("/me/update").put(isAuthenticatedDoctor, updateDoctorProfile);
+
+router.route("/doctor/createreport").post(isAuthenticatedDoctor, createReport);
 
 
 

@@ -32,7 +32,7 @@ const reportSchema = new mongoose.Schema({
         unique: true,
         validate: validator.isEmail
     },
-    reort:{
+    report:{
         type:String,
         required: true
     }
