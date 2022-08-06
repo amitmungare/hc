@@ -11,6 +11,10 @@ const reportSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    healthID: {
+        type:String,
+        required:true
+    },
     addharnumber: {
         type: String,
         unique: true

@@ -113,6 +113,7 @@ exports.createReport = catchAsyncErrors(async(req, res, next) => {
     const reportcreate = await Report.create({
 
         name:user.name,
+        healthID:user.healthID,
         addharnumber:user.addharnumber,
         email:user.email,
         dname:doctor.dname,
@@ -121,7 +122,6 @@ exports.createReport = catchAsyncErrors(async(req, res, next) => {
 
     });
 
-    // sendToken(reportcreate, 201, res);
 
     res.status(201).json({
         success: true,

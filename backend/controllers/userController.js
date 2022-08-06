@@ -3,6 +3,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../models/userModel");
 const Aadhar = require("../models/aadharCardModel");
 const Report = require("../models/reportModel");
+const Counter = require("../models/counterModel");
 const sendToken = require("../utils/jwtToken");
 const crypto = require('crypto');
 const cloudinary = require("cloudinary");
@@ -10,7 +11,7 @@ const cloudinary = require("cloudinary");
 // register a user 
 exports.registerUser = catchAsyncErrors(async(req, res, next) => {
 
-    const {addharnumber, password} = req.body;
+    const {addharnumber, password, phoneno} = req.body;
     
     const aadharverify = await Aadhar.findOne({ addharnumber : req.body.addharnumber });
     if (!aadharverify) {
@@ -22,12 +23,23 @@ exports.registerUser = catchAsyncErrors(async(req, res, next) => {
         return next(new ErrorHander("addhar card already registered", 401));
     }
 
-// health id 
+ // health id 
+    
+    const counternumber = await Counter.findById("62eed7bf89d688717d112186");
+    const num =counternumber.counter+1;
 
-
+    const newcounter = {
+        counter:num
+    }
+    await Counter.findByIdAndUpdate("62eed7bf89d688717d112186", newcounter, {
+        new: true,
+        runValidators: true,
+        userFindAndModify: false,
+    });
     
     const user = await User.create({
         name : aadharverify.name,
+        healthID:num,
         addharnumber,
         email: aadharverify.email,
         password,
