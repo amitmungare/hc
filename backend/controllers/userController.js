@@ -56,22 +56,22 @@ exports.registerUser = catchAsyncErrors(async(req, res, next) => {
 // login user 
 exports.loginUser = catchAsyncErrors(async(req, res, next) => {
 
-    const { email, password } = req.body;
+    const { addharnumber, password } = req.body;
 
-    if (!email || !password) {
-        return next(new ErrorHander("Please enter email and password", 400));
+    if (!addharnumber || !password) {
+        return next(new ErrorHander("Please enter addharnumber and password", 400));
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ addharnumber }).select("+password");
 
     if (!user) {
-        return next(new ErrorHander("Invalid email or password", 401));
+        return next(new ErrorHander("Invalid addharnumber or password", 401));
     }
 
     const isPasswordMatched = await user.comparePassword(password);
 
     if (!isPasswordMatched) {
-        return next(new ErrorHander("Invalid email or password", 401));
+        return next(new ErrorHander("Invalid addharnumber or password", 401));
     }
 
     sendToken(user, 200, res);
