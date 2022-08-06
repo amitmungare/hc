@@ -121,5 +121,12 @@ exports.createReport = catchAsyncErrors(async(req, res, next) => {
 
     });
 
-    sendToken(reportcreate, 201, res);
+    // sendToken(reportcreate, 201, res);
+
+    res.status(201).json({
+        success: true,
+        reportcreate,
+    });
+
+
 });

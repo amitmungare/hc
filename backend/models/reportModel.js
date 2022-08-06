@@ -13,13 +13,11 @@ const reportSchema = new mongoose.Schema({
     },
     addharnumber: {
         type: String,
-        required: true,
         unique: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
         validate: validator.isEmail
     },
     dname: {

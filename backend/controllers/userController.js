@@ -2,6 +2,7 @@ const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../models/userModel");
 const Aadhar = require("../models/aadharCardModel");
+const Report = require("../models/reportModel");
 const sendToken = require("../utils/jwtToken");
 const crypto = require('crypto');
 const cloudinary = require("cloudinary");
@@ -9,18 +10,26 @@ const cloudinary = require("cloudinary");
 // register a user 
 exports.registerUser = catchAsyncErrors(async(req, res, next) => {
 
-    const {addharnumber, email, password} = req.body;
+    const {addharnumber, password} = req.body;
     
     const aadharverify = await Aadhar.findOne({ addharnumber : req.body.addharnumber });
     if (!aadharverify) {
         return next(new ErrorHander("aadhar card not found", 404));
     }
 
+    const usersaddhar = await User.findOne({addharnumber});
+    if(usersaddhar){
+        return next(new ErrorHander("addhar card already registered", 401));
+    }
+
+// health id 
+
+
     
     const user = await User.create({
         name : aadharverify.name,
         addharnumber,
-        email,
+        email: aadharverify.email,
         password,
         dob : aadharverify.dob,
         gender : aadharverify.gender,
@@ -103,4 +112,30 @@ exports.updateProfile = catchAsyncErrors(async(req, res, next) => {
     res.status(200).json({
         success: true,
     });
+});
+
+exports.getMyReport = catchAsyncErrors(async(req, res, next) => {
+
+    const user = await User.findById(req.user.id);
+
+    if(!user){
+        return next(new ErrorHander("Please login", 400));
+    }
+
+    checkemail = user.email;
+
+    const report = await Report.find({ email:checkemail }, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        return data;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      report,
+    });
+
+
 });

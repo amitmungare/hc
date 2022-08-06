@@ -80,6 +80,7 @@ userSchema.methods.comparePassword = async function(password) {
     return await bcrypt.compare(password, this.password);
 }
 
+
 // password reset token 
 userSchema.methods.getResetPasswordToken = function() {
     const resetToken = crypto.randomBytes(20).toString("hex");
