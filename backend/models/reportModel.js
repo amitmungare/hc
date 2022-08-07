@@ -7,6 +7,10 @@ const crypto = require('crypto');
 
 const reportSchema = new mongoose.Schema({
 
+    reportname: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -34,7 +38,11 @@ const reportSchema = new mongoose.Schema({
         unique: true,
         validate: validator.isEmail
     },
-    report:{
+    iv:{
+        type:String,
+        required: true
+    },
+    encryptedData:{
         type:String,
         required: true
     }

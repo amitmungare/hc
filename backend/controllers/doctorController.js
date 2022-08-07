@@ -100,8 +100,24 @@ exports.updateDoctorProfile = catchAsyncErrors(async(req, res, next) => {
 // making report 
 exports.createReport = catchAsyncErrors(async(req, res, next) => {
 
-    const {report} = req.body;
+    const {report , reportname} = req.body;
 
+    // encrypt 
+    const algorithm = 'aes-256-cbc'
+    const key = "adnan-tech-programming-computers" // must be of 32 characters
+    const iv = crypto.randomBytes(16)
+
+
+    const message = report;
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    let encryptedData = cipher.update(message, "utf-8", "hex");
+    encryptedData += cipher.final("hex");
+
+    const base64data = Buffer.from(iv, 'binary').toString('base64');
+
+        
+
+// find doctor 
     const doctor = await Doctor.findById(req.doctor.id);
     
     const user = await User.findOne({ addharnumber : req.body.addharnumber });
@@ -111,14 +127,15 @@ exports.createReport = catchAsyncErrors(async(req, res, next) => {
 
     
     const reportcreate = await Report.create({
-
+        reportname:reportname,
         name:user.name,
         healthID:user.healthID,
         addharnumber:user.addharnumber,
         email:user.email,
         dname:doctor.dname,
         demail:doctor.demail,
-        report:report
+        iv: base64data,
+        encryptedData: encryptedData
 
     });
 

@@ -6,6 +6,7 @@ const {
     logout,
     getUserDetails,
     updateProfile,
+    getMyAllReport,
     getMyReport
 } = require("../controllers/userController");
 
@@ -22,8 +23,9 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 
-router.route("/me/report").get(isAuthenticatedUser, getMyReport);
+router.route("/me/allreport").get(isAuthenticatedUser, getMyAllReport);
 
+router.route("/me/report").post(isAuthenticatedUser, getMyReport);
 
 
 

@@ -23,14 +23,10 @@ const doctorSchema = new mongoose.Schema({
 
 });
 
-
-
 doctorSchema.pre("save", async function(next) {
-
     if (!this.isModified("dpassword")) {
         next();
     }
-
     this.dpassword = await bcrypt.hash(this.dpassword, 10);
 });
 

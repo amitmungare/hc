@@ -8,53 +8,54 @@ const sendToken = require("../utils/jwtToken");
 const crypto = require('crypto');
 const cloudinary = require("cloudinary");
 
-// register a user 
-exports.registerUser = catchAsyncErrors(async(req, res, next) => {
 
-    const {addharnumber, password, phoneno} = req.body;
-    
-    const aadharverify = await Aadhar.findOne({ addharnumber : req.body.addharnumber });
+// register a user 
+exports.registerUser = catchAsyncErrors(async (req, res, next) => {
+
+    const { addharnumber, password, } = req.body;
+
+    const aadharverify = await Aadhar.findOne({ addharnumber: req.body.addharnumber });
     if (!aadharverify) {
         return next(new ErrorHander("aadhar card not found", 404));
     }
 
-    const usersaddhar = await User.findOne({addharnumber});
-    if(usersaddhar){
+    const usersaddhar = await User.findOne({ addharnumber });
+    if (usersaddhar) {
         return next(new ErrorHander("addhar card already registered", 401));
     }
 
- // health id 
-    
+    // health id 
+
     const counternumber = await Counter.findById("62eed7bf89d688717d112186");
-    const num =counternumber.counter+1;
+    const num = counternumber.counter + 1;
 
     const newcounter = {
-        counter:num
+        counter: num
     }
     await Counter.findByIdAndUpdate("62eed7bf89d688717d112186", newcounter, {
         new: true,
         runValidators: true,
         userFindAndModify: false,
     });
-    
+
     const user = await User.create({
-        name : aadharverify.name,
-        healthID:num,
+        name: aadharverify.name,
+        healthID: num,
         addharnumber,
         email: aadharverify.email,
         password,
-        dob : aadharverify.dob,
-        gender : aadharverify.gender,
-        phoneno : aadharverify.phoneno,
-        address : aadharverify.address,
-        pincode : aadharverify.pincode
+        dob: aadharverify.dob,
+        gender: aadharverify.gender,
+        phoneno: aadharverify.phoneno,
+        address: aadharverify.address,
+        pincode: aadharverify.pincode
     });
 
     sendToken(user, 201, res);
 });
 
 // login user 
-exports.loginUser = catchAsyncErrors(async(req, res, next) => {
+exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
     const { addharnumber, password } = req.body;
 
@@ -80,7 +81,7 @@ exports.loginUser = catchAsyncErrors(async(req, res, next) => {
 
 // logout User 
 
-exports.logout = catchAsyncErrors(async(req, res, next) => {
+exports.logout = catchAsyncErrors(async (req, res, next) => {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true
@@ -96,7 +97,7 @@ exports.logout = catchAsyncErrors(async(req, res, next) => {
 
 
 // get user detail
-exports.getUserDetails = catchAsyncErrors(async(req, res, next) => {
+exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
 
     const user = await User.findById(req.user.id);
     res.status(200).json({
@@ -108,7 +109,7 @@ exports.getUserDetails = catchAsyncErrors(async(req, res, next) => {
 
 
 // update user profile
-exports.updateProfile = catchAsyncErrors(async(req, res, next) => {
+exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 
     const newUserData = {
         name: req.body.name,
@@ -126,7 +127,9 @@ exports.updateProfile = catchAsyncErrors(async(req, res, next) => {
     });
 });
 
-exports.getMyReport = catchAsyncErrors(async(req, res, next) => {
+
+// get all reports of user 
+exports.getMyAllReport = catchAsyncErrors(async(req, res, next) => {
 
     const user = await User.findById(req.user.id);
 
@@ -147,6 +150,46 @@ exports.getMyReport = catchAsyncErrors(async(req, res, next) => {
     res.status(200).json({
       success: true,
       report,
+    });
+
+
+});
+
+
+
+exports.getMyReport = catchAsyncErrors(async (req, res, next) => {
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return next(new ErrorHander("Please login", 400));
+    }
+
+    const reportId = req.body.reportId
+
+    const obj = await Report.findById(reportId);
+
+    if (obj == null) {
+        return next(new ErrorHander("not found", 404));
+    }
+
+    // decrypt 
+    const algorithm = 'aes-256-cbc'
+    const key = "adnan-tech-programming-computers" // must be of 32 characters
+    const iv = crypto.randomBytes(16)
+
+
+    const origionalData = Buffer.from(obj.iv, 'base64')
+
+    const decipher = crypto.createDecipheriv(algorithm, key, origionalData);
+    let decryptedData = decipher.update(obj.encryptedData, "hex", "utf-8");
+    decryptedData += decipher.final("utf8");
+
+    
+    res.status(200).json({
+        success: true,
+        obj,
+        decryptedData
     });
 
 
