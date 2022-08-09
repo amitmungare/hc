@@ -10,10 +10,13 @@ const cloudinary = require("cloudinary");
 // register a doctor 
 exports.registerDoctor = catchAsyncErrors(async(req, res, next) => {
 
-    const {dname, demail, dpassword} = req.body;
+    const {dname,dregNumber,dyearReg,stateMedicalCouncil, demail, dpassword} = req.body;
 
     const doctor = await Doctor.create({
         dname,
+        dregNumber,
+        dyearReg,
+        stateMedicalCouncil,
         demail,
         dpassword
     });
@@ -34,6 +37,10 @@ exports.loginDoctor = catchAsyncErrors(async(req, res, next) => {
 
     if (!doctor) {
         return next(new ErrorHander("Invalid email or password", 401));
+    }
+
+    if(doctor.status==false){
+        return next(new ErrorHander("Doctor is not verified", 401));
     }
 
     const isPasswordMatched = await doctor.comparePassword(dpassword);

@@ -26,7 +26,7 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
     // health id 
 
-    const counternumber = await Counter.findById("62eed7bf89d688717d112186");
+    const counternumber = await Counter.findById("62eed7bf89d688717d112186"); //counter number id(do not change)
     const num = counternumber.counter + 1;
 
     const newcounter = {

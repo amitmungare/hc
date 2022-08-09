@@ -10,6 +10,18 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    dregNumber:{
+        type:Number,
+        required:true
+    },
+    dyearReg:{
+        type:Number,
+        required:true
+    },
+    stateMedicalCouncil:{
+        type:String,
+        required:true
+    },
     demail: {
         type: String,
         required: true,
@@ -19,6 +31,10 @@ const doctorSchema = new mongoose.Schema({
     dpassword: {
         type: String,
         required: true
+    },
+    status:{
+        type:Boolean,
+        default:false
     }
 
 });

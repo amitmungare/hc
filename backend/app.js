@@ -18,10 +18,12 @@ app.use(fileUpload());
 const user = require("./routes/userRoute");
 const doctor = require("./routes/doctorRoute");
 const aadharcard = require("./routes/aadharCardRoute");
+const admin = require("./routes/adminRoute")
 
 app.use("/api/v1", user);
 app.use("/api/v1/doctor", doctor);
 app.use("/api/v1", aadharcard);
+app.use("/api/v1/admin", admin);
 
 // middleware for error 
 app.use(errorMiddleware);
