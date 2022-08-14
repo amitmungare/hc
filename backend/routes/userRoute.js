@@ -23,7 +23,7 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 
-router.route("/me/allreport").get(isAuthenticatedUser, getMyAllReport);
+router.route("/me/allreport").post(getMyAllReport);
 
 router.route("/me/report").post(isAuthenticatedUser, getMyReport);
 

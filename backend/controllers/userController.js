@@ -57,23 +57,25 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 // login user 
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
-    const { addharnumber, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!addharnumber || !password) {
-        return next(new ErrorHander("Please enter addharnumber and password", 400));
+    if (!email || !password) {
+        return next(new ErrorHander("Please enter email and password", 400));
     }
 
-    const user = await User.findOne({ addharnumber }).select("+password");
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-        return next(new ErrorHander("Invalid addharnumber or password", 401));
+        return next(new ErrorHander("Invalid email or password", 401));
     }
 
     const isPasswordMatched = await user.comparePassword(password);
 
     if (!isPasswordMatched) {
-        return next(new ErrorHander("Invalid addharnumber or password", 401));
+        return next(new ErrorHander("Invalid email or password", 401));
     }
+
+    console.log(user);
 
     sendToken(user, 200, res);
 });
@@ -131,7 +133,11 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 // get all reports of user 
 exports.getMyAllReport = catchAsyncErrors(async(req, res, next) => {
 
-    const user = await User.findById(req.user.id);
+    const {id}  = req.body
+
+    console.log(id)
+
+    const user = await User.findById(id);
 
     if(!user){
         return next(new ErrorHander("Please login", 400));
